@@ -1,8 +1,7 @@
 # TCP-IP-RMI_Java_GameDuaXe
 Tuần này, thầy yêu cầu tôi làm về Game đua xe qua TCP/IP kết hợp RMI, tôi đã làm project này dựa trên mẫu của thầy.
 
-Yêu cầu:
-  Kết hợp TCP và RMI trong ứng dụng của BTL:
+Yêu cầu: Kết hợp TCP và RMI trong ứng dụng của BTL:
   - Hệ thống có 3 tầng: tầng 1 là client TCP, tầng 2 là server TCP đồng thời làm clientcủa RMI, tầng 3 là server RMI
   - Server RMI quản lí các chức năng liên quan đến CSDL (đăng kí, đăng nhập, bạn bè, hội nhóm, thách đấu, kết quả, xếp hạng), nên các lớp DAO nằm ở tầng server RMI
   - Server TCP quản lí các chức năng cần đồng bộ như thi đấu, gửi nhận message đồng bộ...
