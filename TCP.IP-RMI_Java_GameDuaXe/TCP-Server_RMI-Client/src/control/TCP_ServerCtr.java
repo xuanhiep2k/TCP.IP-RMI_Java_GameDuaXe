@@ -234,7 +234,7 @@ public class TCP_ServerCtr {
                                 break;
                             case ObjectWrapper.DELETE_REQUEST:
                                 request = (RequestModel) data.getData();
-                                if (myRemoteObject.checkFriend(request.getSenderid(), request.getRecieverid())
+                                if (myRemoteObject.deleteRequest(request.getSenderid(), request.getRecieverid())
                                         || myRemoteObject.deleteRequest(request.getRecieverid(), request.getSenderid())) {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DELETE_REQUEST, "ok"));
                                 } else {
