@@ -787,13 +787,13 @@ public class PlayerMainFrm extends javax.swing.JFrame {
 
     public void deny(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
-            JOptionPane.showMessageDialog(this, "Da huy loi moi ket ban " + request.getRequestname());
+            JOptionPane.showMessageDialog(this, "Da huy loi moi ket ban " + requestModel.getRequestname());
             myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.GET_REQUEST, player));
         }
     }
     private void btnDenyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDenyActionPerformed
         // TODO add your handling code here:
-        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.DELETE_REQUEST, request));
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.DELETE_REQUEST, requestModel));
     }//GEN-LAST:event_btnDenyActionPerformed
 
     private void tbl_waitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_waitMouseClicked
