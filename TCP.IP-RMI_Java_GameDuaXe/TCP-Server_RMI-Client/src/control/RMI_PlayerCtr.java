@@ -277,4 +277,28 @@ public class RMI_PlayerCtr {
             return false;
         }
     }
+
+    public boolean leaveGroup(int idplayer, String nameGroup) {
+        try {
+            return GroupRO.leaveGroup(idplayer, nameGroup);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean acceptGroup(int idplayer, String namePlayer, String nameGroup, String host) {
+        try {
+            return GroupRO.acceptGroup(idplayer, namePlayer, nameGroup, host);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean deleteApproval(String namePlayer) {
+        try {
+            return GroupRO.deleteApproval(namePlayer);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

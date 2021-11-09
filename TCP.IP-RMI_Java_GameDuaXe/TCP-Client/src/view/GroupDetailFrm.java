@@ -27,7 +27,7 @@ public class GroupDetailFrm extends javax.swing.JFrame {
     private Player player;
     private TCP_PlayerCtr myRemoteObject;
     private Group group;
-    private ArrayList<Group> listMember;
+    private ArrayList<Group> listMember, listApproval;
 
     public GroupDetailFrm(TCP_PlayerCtr ro, Player pl, Group gr) {
         initComponents();
@@ -38,42 +38,61 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         txtWelcome.setText("Xin chào: " + player.getFullname());
         txtNameGroup.setText(group.getNameGroup());
+        txtHost.setText(group.getHost());
+
         if (player.getFullname().equals(group.getHost())) {
             btnJoin.setVisible(false);
+            btnLeaveGroup.setVisible(false);
+            btnAcceptJoin.setVisible(true);
         } else {
             btnJoin.setVisible(true);
+            btnLeaveGroup.setVisible(true);
+            btnAcceptJoin.setVisible(false);
         }
-
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_APPROVAL, group));
         myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_MEMBER, group));
-
         group.setIdplayer(player.getId_player());
         group.setNameGroup(group.getNameGroup());
         myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_JOIN_APPROVAL, group));
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_LEAVE, group));
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_JOIN, player));
 
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LIST_MEMBER, this));
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN, this));
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN_APPROVAL, this));
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_GROUP, this));
-        this.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_LEAVE, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_GROUP, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LIST_APPROVAL, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_GROUP, this));
 
-            }
-        });
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_GROUP, this));
+
+    }
+
+    public void checkLeave(ObjectWrapper data) {
+        if (data.getData().equals("false")) {
+            btnLeaveGroup.setVisible(false);
+            btnChallenge.setVisible(false);
+        }
+    }
+
+    public void leaveGroup(ObjectWrapper data) {
+        if (data.getData().equals("ok")) {
+            //JOptionPane.showMessageDialog(this, "Ban da roi nhom: " + group.getNameGroup());
+            myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_GROUP, player));
+            this.dispose();
+        }
     }
 
     public void checkJoin(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
             btnJoin.setVisible(false);
-        } else {
-            btnJoin.setVisible(true);
         }
     }
 
     public void checkJoinApproval(ObjectWrapper data) {
         if (data.getData().equals("ok")) {
             btnJoin.setVisible(false);
-        } else {
-            btnJoin.setVisible(true);
         }
     }
 
@@ -97,6 +116,30 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         }
     }
 
+    public void listApproval(ObjectWrapper data) {
+        listApproval = new ArrayList<>();
+        if (player.getFullname().equals(group.getHost())) {
+            if (data.getData() instanceof ArrayList<?>) {
+                listApproval = (ArrayList<Group>) data.getData();
+                String[] columnNames1 = {"Name Player", "Name Group", "Host"};
+                Object[][] value1 = new Object[listApproval.size()][columnNames1.length];
+                for (int i = 0; i < listApproval.size(); i++) {
+                    value1[i][0] = listApproval.get(i).getNamePlayer();
+                    value1[i][1] = listApproval.get(i).getNameGroup();
+                    value1[i][2] = listApproval.get(i).getHost();
+                }
+                DefaultTableModel tableModelApproval = new DefaultTableModel(value1, columnNames1) {
+                    @Override
+                    public boolean isCellEditable(int row, int column) {
+                        //unable to edit cells
+                        return false;
+                    }
+                };
+                tbl_approval.setModel(tableModelApproval);
+            }
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -116,6 +159,8 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tbl_approval = new javax.swing.JTable();
         btnAcceptJoin = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtHost = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -157,6 +202,11 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         });
 
         btnLeaveGroup.setText("Leave Group");
+        btnLeaveGroup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLeaveGroupActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -180,7 +230,7 @@ public class GroupDetailFrm extends javax.swing.JFrame {
                     .addComponent(btnChallenge)
                     .addComponent(btnJoin)
                     .addComponent(btnLeaveGroup))
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Danh sách thành viên", jPanel1);
@@ -193,9 +243,19 @@ public class GroupDetailFrm extends javax.swing.JFrame {
                 "Name Player", "Name Group", "Host"
             }
         ));
+        tbl_approval.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbl_approvalMouseClicked(evt);
+            }
+        });
         jScrollPane3.setViewportView(tbl_approval);
 
         btnAcceptJoin.setText("Accept Join");
+        btnAcceptJoin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAcceptJoinActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -212,10 +272,16 @@ public class GroupDetailFrm extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnAcceptJoin)
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Danh sách chờ xét duyệt", jPanel2);
+
+        jLabel2.setText("Host:");
+
+        txtHost.setEditable(false);
+        txtHost.setForeground(new java.awt.Color(0, 0, 255));
+        txtHost.setBorder(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -228,7 +294,11 @@ public class GroupDetailFrm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtNameGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtNameGroup, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(64, 64, 64)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtHost))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 429, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(26, 26, 26)
@@ -245,9 +315,12 @@ public class GroupDetailFrm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(txtNameGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNameGroup, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -275,6 +348,38 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.JOIN_GROUP, group));
     }//GEN-LAST:event_btnJoinActionPerformed
 
+    private void btnLeaveGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLeaveGroupActionPerformed
+        // TODO add your handling code here:
+        group.setIdplayer(player.getId_player());
+        group.setNameGroup(group.getNameGroup());
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LEAVE_GROUP, group));
+    }//GEN-LAST:event_btnLeaveGroupActionPerformed
+    Group gr = new Group();
+    private void tbl_approvalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbl_approvalMouseClicked
+        // TODO add your handling code here:
+        int column = tbl_approval.getColumnModel().getColumnIndexAtX(evt.getX()); // get the coloum of the button
+        int row = evt.getY() / tbl_approval.getRowHeight(); // get the row of the button
+
+        // *Checking the row or column is valid or not
+        if (row < tbl_approval.getRowCount() && row >= 0 && column < tbl_approval.getColumnCount() && column >= 0) {
+            gr = listApproval.get(row);
+        }
+    }//GEN-LAST:event_tbl_approvalMouseClicked
+
+    public void acceptGroup(ObjectWrapper data) {
+        if (data.getData().equals("ok")) {
+            //  JOptionPane.showMessageDialog(this, "Da them " + gr.getNamePlayer() + " vao nhom " + group.getNameGroup());
+            myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_GROUP, player));
+            myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_APPROVAL, gr));
+            myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.LIST_MEMBER, group));
+            this.dispose();
+        }
+    }
+    private void btnAcceptJoinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcceptJoinActionPerformed
+        // TODO add your handling code here:
+        myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.ACCEPT_GROUP, gr));
+    }//GEN-LAST:event_btnAcceptJoinActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -286,6 +391,7 @@ public class GroupDetailFrm extends javax.swing.JFrame {
     private javax.swing.JButton btnJoin;
     private javax.swing.JButton btnLeaveGroup;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
@@ -293,6 +399,7 @@ public class GroupDetailFrm extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tbl_approval;
     private javax.swing.JTable tbl_memberGroup;
+    private javax.swing.JTextField txtHost;
     private javax.swing.JTextField txtNameGroup;
     private javax.swing.JTextField txtWelcome;
     // End of variables declaration//GEN-END:variables

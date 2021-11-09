@@ -862,8 +862,9 @@ public class PlayerMainFrm extends javax.swing.JFrame {
             if (existed != null) {
                 myRemoteObject.getActiveFunction().remove(existed);
             }
+
             new GroupDetailFrm(myRemoteObject, player, listGroup.get(row)).setVisible(true);
-            myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_JOIN, player));
+
             if (group.getHost().equals(player.getFullname())) {
                 btnDeleteGroup.setEnabled(true);
             } else {

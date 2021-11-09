@@ -218,4 +218,19 @@ public class RMI_ServerCtr extends UnicastRemoteObject implements RMILoginInterf
         return new PlayerDAO().checkJoinApproval(idplayer, nameGroup);
     }
 
+    @Override
+    public boolean leaveGroup(int idplayer, String nameGroup) throws RemoteException {
+        return new PlayerDAO().leaveGroup(idplayer, nameGroup);
+    }
+
+    @Override
+    public boolean acceptGroup(int idplayer, String namePlayer, String nameGroup, String host) throws RemoteException {
+        return new PlayerDAO().acceptGroup(idplayer, namePlayer, nameGroup, host);
+    }
+
+    @Override
+    public boolean deleteApproval(String namePlayer) throws RemoteException {
+        return new PlayerDAO().deleteApproval(namePlayer);
+    }
+
 }

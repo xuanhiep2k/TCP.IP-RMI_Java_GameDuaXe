@@ -56,6 +56,14 @@ public class ObjectWrapper implements Serializable {
     public static final int REPLY_JOIN_GROUP = 51;
     public static final int CHECK_JOIN_APPROVAL = 52;
     public static final int REPLY_CHECK_JOIN_APPROVAL = 53;
+    public static final int CHECK_LEAVE = 22;
+    public static final int REPLY_CHECK_LEAVE = 23;
+    public static final int LEAVE_GROUP = 54;
+    public static final int REPLY_LEAVE_GROUP = 55;
+    public static final int LIST_APPROVAL = 56;
+    public static final int REPLY_LIST_APPROVAL = 57;
+    public static final int ACCEPT_GROUP = 58;
+    public static final int REPLY_ACCEPT_GROUP = 59;
 
     private int performative;
     private Object data;

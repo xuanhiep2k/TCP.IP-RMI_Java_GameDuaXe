@@ -212,6 +212,22 @@ public class TCP_PlayerCtr {
                                             gdf = (GroupDetailFrm) ft.getData();
                                             gdf.checkJoinApproval(data);
                                             break;
+                                        case ObjectWrapper.REPLY_CHECK_LEAVE:
+                                            gdf = (GroupDetailFrm) ft.getData();
+                                            gdf.checkLeave(data);
+                                            break;
+                                        case ObjectWrapper.REPLY_LEAVE_GROUP:
+                                            gdf = (GroupDetailFrm) ft.getData();
+                                            gdf.leaveGroup(data);
+                                            break;
+                                        case ObjectWrapper.REPLY_LIST_APPROVAL:
+                                            gdf = (GroupDetailFrm) ft.getData();
+                                            gdf.listApproval(data);
+                                            break;
+                                        case ObjectWrapper.REPLY_ACCEPT_GROUP:
+                                            gdf = (GroupDetailFrm) ft.getData();
+                                            gdf.acceptGroup(data);
+                                            break;
                                     }
                                 }
                             }

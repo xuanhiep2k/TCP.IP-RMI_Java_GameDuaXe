@@ -255,10 +255,6 @@ public class TCP_ServerCtr {
                                         || myRemoteObject.deleteFriend(friend.getIdPlayer2(), friend.getIdPlayer1())) {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_DELETE_FRIEND, "ok"));
                                 }
-//                                data = new ObjectWrapper(ObjectWrapper.REPLY_DELETE_FRIEND, "ok");
-//                                for (ServerProcessing sp : myProcess) {
-//                                    sp.sendData(data);
-//                                }
                                 break;
                             case ObjectWrapper.CREATE_GROUP:
                                 Group group = (Group) data.getData();
@@ -280,7 +276,7 @@ public class TCP_ServerCtr {
                                 break;
                             case ObjectWrapper.CHECK_GROUP:
                                 player = (Player) data.getData();
-                                if (myRemoteObject.checkGroup(player.getIdplayer())) {
+                                if (new PlayerDAO().checkGroup(player.getIdplayer())) {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_GROUP, "ok"));
                                 } else {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_GROUP, "false"));
@@ -305,7 +301,7 @@ public class TCP_ServerCtr {
                                 break;
                             case ObjectWrapper.CHECK_JOIN:
                                 player = (Player) data.getData();
-                                if (myRemoteObject.checkJoin(player.getId_player())) {
+                                if (new PlayerDAO().checkJoin(player.getId_player())) {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN, "ok"));
                                 } else {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN, "false"));
@@ -326,6 +322,40 @@ public class TCP_ServerCtr {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN_APPROVAL, "ok"));
                                 } else {
                                     oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN_APPROVAL, "false"));
+                                }
+                                break;
+                            case ObjectWrapper.CHECK_LEAVE:
+                                group = (Group) data.getData();
+                                if (new PlayerDAO().checkLeave(group.getIdplayer(), group.getNameGroup())) {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_LEAVE, "ok"));
+                                } else {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_LEAVE, "false"));
+                                }
+                                break;
+                            case ObjectWrapper.LEAVE_GROUP:
+                                group = (Group) data.getData();
+                                if (myRemoteObject.leaveGroup(group.getIdplayer(), group.getNameGroup())) {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_GROUP, "ok"));
+                                } else {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_GROUP, "false"));
+                                }
+                                break;
+                            case ObjectWrapper.LIST_APPROVAL:
+                                group = (Group) data.getData();
+                                listGroup = new PlayerDAO().listApproval(group.getHost());
+                                oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_LIST_APPROVAL, listGroup));
+                                data = new ObjectWrapper(ObjectWrapper.REPLY_LIST_APPROVAL, listGroup);
+                                for (ServerProcessing sp : myProcess) {
+                                    sp.sendData(data);
+                                }
+                                break;
+                            case ObjectWrapper.ACCEPT_GROUP:
+                                group = (Group) data.getData();
+                                if (myRemoteObject.acceptGroup(group.getIdplayer(), group.getNamePlayer(), group.getNameGroup(), group.getHost())) {
+                                    myRemoteObject.deleteApproval(group.getNamePlayer());
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_GROUP, "ok"));
+                                } else {
+                                    oos.writeObject(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_GROUP, "false"));
                                 }
                                 break;
                         }
