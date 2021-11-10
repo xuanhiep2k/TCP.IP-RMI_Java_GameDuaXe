@@ -57,14 +57,14 @@ public class GroupDetailFrm extends javax.swing.JFrame {
         myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_LEAVE, group));
         myRemoteObject.sendData(new ObjectWrapper(ObjectWrapper.CHECK_JOIN, player));
 
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LIST_MEMBER, this));
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN, this));
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN_APPROVAL, this));
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_LEAVE, this));
-        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_GROUP, this));
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LIST_APPROVAL, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN_APPROVAL, this));
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_ACCEPT_GROUP, this));
-
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_DELETE_GROUP, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LIST_MEMBER, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_LEAVE, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_CHECK_JOIN, this));
+        myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_LEAVE_GROUP, this));
         myRemoteObject.getActiveFunction().add(new ObjectWrapper(ObjectWrapper.REPLY_JOIN_GROUP, this));
 
     }
